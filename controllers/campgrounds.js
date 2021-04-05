@@ -57,16 +57,18 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateCampground = async (req, res) => {
     const id = req.params.id;
     //const campground = await Campground.findByIdAndUpdate(id, {...req.body.campground});works too
-    // const campground = await Campground.findByIdAndUpdate(id, req.body.campground);
 
-    const campground = await Campground.findById(id);
-    if (!campground.author.equals(req.user._id)) {
-        req.flash('error', 'You dont have permission to do that!');
-        return res.redirect(`/campgrounds/${id}`);
-    }
-    const camp = await Campground.findByIdAndUpdate(id, req.body.campground);
+    //  const campground = await Campground.findById(id);tempo
+    // if (!campground.author.equals(req.user._id)) {
+    //     req.flash('error', 'You dont have permission to do that!');
+    //     return res.redirect(`/campgrounds/${id}`);
+    // }
+    const campground = await Campground.findByIdAndUpdate(id, req.body.campground);
+    const imgs = req.files.map(f => ({url: f.path, filename: f.filename}))
+    campground.images.push(...imgs) //take data from array and insert
+    await campground.save();
     req.flash('sakses', 'Successfully updated campground!');
-    res.redirect(`/campgrounds/${camp._id}`);
+    res.redirect(`/campgrounds/${campground._id}`);
 
 }
 
