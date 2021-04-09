@@ -4,7 +4,7 @@
 
   <div class="row">
     <div class="col-6">
-      <div id='map' style='width: 400px; height: 300px;'></div>
+      
       <div id="campgroundCarousel" class="carousel carousel-dark slide" data-bs-ride="carousel">
         <div class="carousel-inner">
           <% campground.images.forEach((image, i) => { %> 
@@ -62,7 +62,7 @@
     <div class="col-6">
       <!-- <% if(currentUser ) {%> edited by machi&& !campground.author.equals(currentUser) -->
         
-        
+        <div id='map' style='width: 400px; height: 300px;'></div>
       <h2>Leave a Review</h2>
       <form action="/campgrounds/<%=campground._id%>/reviews" method="post" class="mb-3 validated-form" novalidate>
         <!-- <div class="mb-3">
@@ -107,14 +107,19 @@
               <!-- <h6 class="card-subtitle mb-2 text-muted">By <%= review.author.username %></h6> -->
               <p class="card-text">Review: <%= review.body %>
               </p>
+              
               <% if(currentUser && review.author.equals(currentUser._id)) {%>
                 <form action="/campgrounds/<%= campground._id%>/reviews/<%=review._id %>?_method=delete" method="post">
                   <button class="btn btn-danger btn-sm">Delete</button>
                 </form>
+               
                 <% } %>
+                
             </div>
+            
           </div>
           <% } %>
+          
     </div>
   </div>
 
