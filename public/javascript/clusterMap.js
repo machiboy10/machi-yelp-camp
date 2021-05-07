@@ -7,6 +7,8 @@ var map = new mapboxgl.Map({
     zoom: 3
 });
 
+console.log(campgrounds)
+
 map.on('load', function () {
     //console.log("Map Loaded!!")
     // Add a new source from our GeoJSON data and
@@ -104,6 +106,7 @@ map.on('load', function () {
     // description HTML from its properties.
     map.on('click', 'unclustered-point', function (e) {
         //console.log("Unclustered Point clicked!!!")
+        console.log(e.features[0])
         var coordinates = e.features[0].geometry.coordinates.slice();
         var mag = e.features[0].properties.mag;
         var tsunami;
@@ -124,7 +127,8 @@ map.on('load', function () {
         new mapboxgl.Popup()
             .setLngLat(coordinates)
             .setHTML(
-                'magnitude: ' + mag + '<br>Was there a tsunami?: ' + tsunami
+                // 'magnitude: ' + mag + '<br>Was there a tsunami?: ' + tsunami
+                '<h3>Campground </h3>'
             )
             .addTo(map);
     });
