@@ -15,6 +15,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 
+const mongoSanitize = require('express-mongo-sanitize');
+
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
@@ -43,6 +45,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname,'public'))); 
+app.use(mongoSanitize({
+    replaceWith: '_'
+}));
+
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
     resave: false,
@@ -63,17 +69,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use((req,res,next) => {
-   // console.log(req.session);
-    // if(!['/login', '/'].includes(req.originalUrl)){ nexttime
-    //     req.session.returnTo = req.originalUrl;
-    // }
 
-    res.locals.currentUser = req.user;
-    res.locals.success = req.flash('sakses');
-    res.locals.error = req.flash('error');
-    next();
-})
 
 app.get('/fakeUser', async (req, res) => {
     const user = new User({email: 'coltttt@gmail.com', username: 'colttt'});
@@ -104,6 +100,18 @@ const validateReview = (req, res, next) => {
         next();
     }
 }
+
+app.use((req,res,next) => {
+    // console.log(req.session);
+     // if(!['/login', '/'].includes(req.originalUrl)){ nexttime
+     //     req.session.returnTo = req.originalUrl;
+     // }
+    console.log(req.query);
+     res.locals.currentUser = req.user;
+     res.locals.success = req.flash('sakses');
+     res.locals.error = req.flash('error');
+     next();
+ })
 
 app.use('/', userRoutes);
 app.use('/campgrounds', campgroundRoutes);
