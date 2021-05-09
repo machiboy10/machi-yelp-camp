@@ -1,6 +1,8 @@
-// if (process.env.NODE_ENV !== "production"){
-//     require('dotenv').config(); 
-// }
+if (process.env.NODE_ENV !== "production"){
+    require('dotenv').config(); 
+}
+
+
 
 require('dotenv').config();
 const express = require('express');
@@ -23,7 +25,15 @@ const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {
+ const MongoStore = require('connect-mongo')(session);
+
+
+
+//const dbUrl = process.env.DB_URL;
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+
+// 'mongodb://localhost:27017/yelp-camp'
+mongoose.connect(dbUrl, {  
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
@@ -50,18 +60,34 @@ app.use(mongoSanitize({
     replaceWith: '_'
 }));
 
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
+
+const store = new MongoStore({
+    url: dbUrl,
+    secret: secret,
+    touchAfter: 24 * 60 * 60 //seconds
+});
+
+store.on("error", function(e){
+    console.log("SESSION STORE ERROR", e);
+})
+
 const sessionConfig = {
+    store: store,
     name: 'session',
-    secret: 'thisshouldbeabettersecret!',
+    secret: secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
         // secure: true,
-        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7, 
         maxAge: 1000 * 60 * 60 * 24 * 7
+        //milliseconds
     }
 }
+
+
 app.use(session(sessionConfig));//must be before passport.session
 app.use(flash());
 app.use(helmet({
